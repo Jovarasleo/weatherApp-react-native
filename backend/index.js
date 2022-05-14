@@ -25,7 +25,7 @@ app.get("/:location", async (req, res) => {
   //   .db("weatherApp")
   //   .collection("weatherData")
   //   .insertOne(responseJSON);
-  const tempToC = (responseJSON.main.temp - 273.15).toFixed(1);
+  const tempToC = (responseJSON?.main?.temp - 273.15).toFixed(1);
   const dataObj = { city: responseJSON.name, temp: tempToC };
   res.send(dataObj);
 });
