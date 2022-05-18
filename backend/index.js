@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import fetch from "node-fetch";
+
 // import { MongoClient } from "mongodb";
 dotenv.config();
 
@@ -15,19 +17,27 @@ app.use(cors());
 
 app.get("/:location", async (req, res) => {
   const cityname = req.params.location;
-  console.log(cityname);
+
   // const connection = await mongoClient.connect();
-  let fetchResponse = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${cityname}&appid=${APIkey}`
-  );
-  let responseJSON = await fetchResponse.json();
   // await connection
   //   .db("weatherApp")
   //   .collection("weatherData")
   //   .insertOne(responseJSON);
-  const tempToC = (responseJSON?.main?.temp - 273.15).toFixed(1);
-  const dataObj = { city: responseJSON.name, temp: tempToC };
-  res.send(dataObj);
+
+  let url = `https://api.openweathermap.org/data/2.5/weather?q=${cityname}&appid=${APIkey}`;
+
+  let settings = { method: "Get" };
+
+  fetch(url, settings)
+    .then((res) => res.json())
+    .then((json) => {
+      const tempToC = (json?.main?.temp - 273.15).toFixed(1);
+      const dataObj = { city: json?.name, temp: tempToC };
+      res.send(dataObj);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
 });
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
